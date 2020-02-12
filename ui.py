@@ -4,6 +4,16 @@ import os
 import time
 
 
+help_menu = """
+travel: moves you randomly between 30-60 miles and takes 3-7 days (random).
+rest: increases health 1 level (up to 5 maximum) and takes 2-5 days (random).
+hunt: adds 100 lbs of food and takes 2-5 days (random).
+status: lists food, health, distance traveled, and day.
+help: lists all the commands.
+quit: will end the game.
+"""
+
+
 action_menu = """
 ---------------
 Pick a action:
@@ -26,6 +36,20 @@ hunt_menu = """What would you like to hunt?
     Family (f)
     Dog    (d)
     \n"""
+
+
+low_health_warning = "You are dangerously low on health and could die the next time you travel. Choose option R to heal"
+low_food_warning = "You are dangerously low on food and could die the next time you travel. Choose option H to hunt for food"
+dogs = ["Ranger" , "Scout" , "Fido" , "Spot" , "Snoopy" , "Charlie" , "Bella" , "Max" , "Woody" , "Daisy"]
+family = ["Emma" , "Olivia" , "Ava" , "Isabella" , "Sophia" , "Liam" , "Noah" , "William" , "James" , "Oliver"]
+NAME_OF_MONTH = [
+    'fake', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
+    'August', 'September', 'October', 'November', 'December'
+]
+
+
+def user_pause():
+  input("Press any key to continue")
 
 
 def clear():

@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+
+'''
+Game Constants -- global variable constants that define the rules of the game, and which don't change.
+'''
+
+MIN_MILES_PER_TRAVEL = 40
+MAX_MILES_PER_TRAVEL = 80
+MIN_DAYS_PER_TRAVEL = 3
+MAX_DAYS_PER_TRAVEL = 7
+
+MIN_DAYS_PER_REST = 2
+MAX_DAYS_PER_REST = 4
+HEALTH_CHANGE_PER_REST = 1
+MAX_HEALTH = 5
+
+MIN_DAYS_PER_HUNT = 1
+MAX_DAYS_PER_HUNT = 2
+
+FOOD_EATEN_PER_DAY = 5
+MILES_BETWEEN_MISSOURI_AND_OREGON = 2000
+MONTHS_WITH_31_DAYS = [1, 3, 5, 7, 8, 10, 12]
+MONTHS_WITH_30_DAYS = [4, 6, 9, 11]
+MONTHS_WITH_28_DAYS = [2]

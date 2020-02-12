@@ -2,10 +2,8 @@
 
 import random
 import time
-import gui
-
-dogs = ["Ranger" , "Scout" , "Fido" , "Spot" , "Snoopy" , "Charlie" , "Bella" , "Max" , "Woody" , "Daisy"]
-family = ["Emma" , "Olivia" , "Ava" , "Isabella" , "Sophia" , "Liam" , "Noah" , "William" , "James" , "Oliver"]
+import ui
+import constants
 
 
 # beginning values
@@ -21,6 +19,7 @@ family_left = 4
 dogs_left = 3
 eatnum = 9
 
+
 # Converts a numeric date into a string.
 # inputs: a month in the range 1-12 and a day in the range 1-31
 # output: a string like "December 24".
@@ -30,11 +29,13 @@ def date_as_string(month_number, day_number):
     date_string = str(month_number) + "/" + str(day_number)
     return date_string
 
+
 # output: miles remaining until Oregon
 def miles_remaining():
     '''Returns the number of miles remaining'''
-    remainingmiles = MILES_BETWEEN_MISSOURI_AND_OREGON - miles_traveled
+    remainingmiles = constants.MILES_BETWEEN_MISSOURI_AND_OREGON - miles_traveled
     return remainingmiles
+
 
 # Returns the number of days in the month (28, 30, or 31).
 # input: an integer from 1 to 12. 1=January, 2=February, etc.
@@ -44,17 +45,22 @@ def days_in_month(days):
     if days < 1 or days > 12:
         return 0
     else:
-        if days in MONTHS_WITH_31_DAYS:
+        if days in constants.MONTHS_WITH_31_DAYS:
             return 31
-        elif days in MONTHS_WITH_30_DAYS:
+        elif days in constants.MONTHS_WITH_30_DAYS:
             return 30
         else:
             return 28
 
 
-# Calculates whether a sickess occurs on the current day based on how many days remain in the month and how many sick days have already occured this month. If there are N days left in the month, then the chance of a sick day is either 0, 1 out of N, or 2 out of N, depending on whether there have been 2 sick days so far, 1 sick day so far, or no sick days so far.
-# This system guarantees that there will be exactly 2 sick days each month, and incidentally that every day of the month is equally likely to be a sick day
-def random_sickness_occurs(sicknesses_suffered_this_month , day , percent):
+# Calculates whether a sickess occurs on the current day based on how many
+# days remain in the month and how many sick days have already occured this month.
+# If there are N days left in the month, then the chance of a sick day is either
+# 0, 1 out of N, or 2 out of N, depending on whether there have been 2 sick days
+# so far, 1 sick day so far, or no sick days so far. This system guarantees that
+# there will be exactly 2 sick days each month, and incidentally that every day
+# of the month is equally likely to be a sick day
+def random_sickness_occurs(sicknesses_suffered_this_month, day, percent):
     '''gives player a randomly occuring sickness two times each month'''
     # Checks if sickness has happened twice already this month and returns false
     if sicknesses_suffered_this_month < 2:
@@ -80,18 +86,18 @@ def random_sickness_occurs(sicknesses_suffered_this_month , day , percent):
 
 # enforces rules for what happens when a sickness occurs
 def handle_sickness():
-  '''takes away health from player when sick'''
-  global health_level
-  print(health_level)
-  health_level -= 1
-  print("You lost 1 health to sickness!")
+    '''takes away health from player when sick'''
+    global health_level
+    print(health_level)
+    health_level -= 1
+    print("You lost 1 health to sickness!")
 
 
 # decreases the food for 1 elapsed day
 def consume_food():
     '''allows player to eat 5 punds of food per day'''
     global food_remaining
-    food_remaining -= FOOD_EATEN_PER_DAY
+    food_remaining -= constants.FOOD_EATEN_PER_DAY
     if food_remaining < 0:
         game_is_over()
     else:
@@ -99,13 +105,18 @@ def consume_food():
         print("You have " + str(days_food) + " days of food left.")
 
 
-# Repairs problematic values in the global (month, day) model where the day is larger than the number of days in the month. If this happens, advances to the next month and knocks the day value down accordingly. Knows that different months have different numbers of days. Doesn't handle cases where the day is more than 28 days in excess of the limit for that month -- could still end up with an impossible date after this function is called.
+# Repairs problematic values in the global (month, day) model where the day
+# is larger than the number of days in the month. If this happens, advances
+# to the next month and knocks the day value down accordingly. Knows that
+# different months have different numbers of days. Doesn't handle cases where
+# the day is more than 28 days in excess of the limit for that month -- could
+# still end up with an impossible date after this function is called.
 # Returns True if the global month/day values were altered, else False.
 def maybe_rollover_month():
     '''switches the month to the next when nessacary'''
     global month
     global day
-    if month in MONTHS_WITH_31_DAYS:
+    if month in constants.MONTHS_WITH_31_DAYS:
         if day > 31:
             month += 1
             if month > 12:
@@ -114,7 +125,7 @@ def maybe_rollover_month():
             return True
         else:
             return False
-    elif month in MONTHS_WITH_30_DAYS:
+    elif month in constants.MONTHS_WITH_30_DAYS:
         if day > 30:
             month += 1
             if month > 12:
@@ -123,7 +134,7 @@ def maybe_rollover_month():
             return True
         else:
             return False
-    elif month in MONTHS_WITH_28_DAYS:
+    elif month in constants.MONTHS_WITH_28_DAYS:
         if day > 28:
             month += 1
             if month > 12:
@@ -136,7 +147,10 @@ def maybe_rollover_month():
         return False
 
 
-# Causes a certain number of days to elapse. The days pass one at a time, and each day brings with it a random chance of sickness. The sickness rules are quirky: player is guaranteed to fall ill a certain number of times each month, so illness needs to keep track of month changes.
+# Causes a certain number of days to elapse. The days pass one at a time,
+# and each day brings with it a random chance of sickness. The sickness
+# rules are quirky: player is guaranteed to fall ill a certain number of
+# times each month, so illness needs to keep track of month changes.
 # input: an integer number of days that elapse.
 def advance_game_clock(number_days):
     '''Goes to the next day'''
@@ -154,18 +168,19 @@ def advance_game_clock(number_days):
         consume_food()
         new_month = maybe_rollover_month()
         if new_month == True:
-           print("It is now", NAME_OF_MONTH[month] + ".")
+           print("It is now", ui.NAME_OF_MONTH[month] + ".")
 
 
 # enforces the game rules for what happens if a player decides to travel
 def handle_travel():
     '''travels the player 30 - 60 miles in 3 - 7 days'''
-    miles = random.randint(MIN_MILES_PER_TRAVEL, MAX_MILES_PER_TRAVEL)
-    time = random.randint(MIN_DAYS_PER_TRAVEL, MAX_DAYS_PER_TRAVEL)
+    miles = random.randint(constants.MIN_MILES_PER_TRAVEL, constants.MAX_MILES_PER_TRAVEL)
+    time = random.randint(constants.MIN_DAYS_PER_TRAVEL, constants.MAX_DAYS_PER_TRAVEL)
     global miles_traveled
     miles_traveled += miles
     print("You have travelled", miles, "miles and have", miles_remaining(), "miles remaining.")
     advance_game_clock(time)
+
 
 # enforces the game rules for what happens if a player decides to rest
 def handle_rest():
@@ -173,22 +188,24 @@ def handle_rest():
     global health_level
     if health_level < 5:
       health_level = health_level + 1
-    days_resting = random.randint(MIN_DAYS_PER_REST, MAX_DAYS_PER_REST)
+    days_resting = random.randint(constants.MIN_DAYS_PER_REST, constants.MAX_DAYS_PER_REST)
     advance_game_clock(days_resting)
+
 
 def days_to_hunt():
     """shortens the code in handle_hunt"""
-    upper_bound = MAX_DAYS_PER_HUNT
-    day_at_hunt = random.randint(MIN_DAYS_PER_HUNT, upper_bound)
+    upper_bound = constants.MAX_DAYS_PER_HUNT
+    day_at_hunt = random.randint(constants.MIN_DAYS_PER_HUNT, upper_bound)
     advance_game_clock(day_at_hunt)
+
 
 # the game rules for what happens if a player decides to hunt
 def handle_hunt():
     '''allows players to hunt and gain extra food'''
     global eatnum
     num = random.randint(0,eatnum)
-    food = input(gui.hunt_menu).lower()
-    gui.clear()
+    food = input(ui.hunt_menu).lower()
+    ui.clear()
     global food_remaining
     global dogs_left
     global family_left
@@ -198,61 +215,62 @@ def handle_hunt():
         if hunt == 1:
             food_remaining += 120
             print("You killed a Bison. Food + 120")
-            input("Press any key to continue")
-            gui.clear()
+            ui.user_pause()
+            ui.clear()
         else:
             print("Hunt Failed 20% Chance")
-            input("Press any key to continue")
-            gui.clear()
+            ui.user_pause()
+            ui.clear()
     elif food == "p":
         hunt = random.randint(1,3)
         days_to_hunt()
         if hunt == 1:
             food_remaining += 80
             print("You killed a Pig. Food + 80")
-            input("Press any key to continue")
-            gui.clear()
+            ui.user_pause()
+            ui.clear()
         else:
             print("Hunt Failed 33% Chance")
-            input("Press any key to continue")
-            gui.clear()
+            ui.user_pause()
+            ui.clear()
     elif food == "s":
         hunt = random.randint(1,2)
         days_to_hunt()
         if hunt == 1:
             food_remaining += 40
             print("You killed a Snake. Food + 40")
-            input("Press any key to continue")
-            gui.clear()
+            ui.user_pause()
+            ui.clear()
         else:
             print("Hunt Failed 50% Chance")
-            input("Press any key to continue")
-            gui.clear()
+            ui.user_pause()
+            ui.clear()
     elif food == "f":
         if family_left >= 1:
             food_remaining += 80
             family_left -= 1
-            print("You killed and ate" , family[num] , "\nAll the memories... \nThe screams ... \nFood + 80")
-            family.remove(family[num])
+            print("You killed and ate" , ui.family[num] , "\nAll the memories... \nThe screams ... \nFood + 80")
+            ui.family.remove(ui.family[num])
             eatnum -= 1
-            input("Press any key to continue")
-            gui.clear()
+            ui.user_pause()
+            ui.clear()
         else:
             print("All of your family is dead...")
     elif food == "d":
         if dogs_left >= 1:
             food_remaining += 60
             dogs_left -= 1
-            print("You killed and ate" , dogs[num] , "\nAll the memories... \nFood + 60")
-            dogs.remove(dogs[num])
+            print("You killed and ate" , ui.dogs[num] , "\nAll the memories... \nFood + 60")
+            ui.dogs.remove(ui.dogs[num])
             eatnum -= 1
-            input("Press any key to continue")
-            gui.clear()
+            ui.user_pause()
+            ui.clear()
         else:
             print("All your dogs are dead...")
 
 
-# print a player's current status on the journey, including food remaining, health level, distance traveled, and date
+# print a player's current status on the journey, including
+# food remaining, health level, distance traveled, and date
 def handle_status():
     '''allows players to see what resources they have left'''
     print("Date:", date_as_string(month, day))
@@ -262,12 +280,13 @@ def handle_status():
     print("Dogs Left:", dogs_left)
     print("Family Left:", family_left)
 
+
 # prints the hep text
 def handle_help():
     '''Brings up the help menu'''
-    print("travel: moves you randomly between 30-60 miles and takes 3-7 days (random).\nrest: increases health 1 level (up to 5 maximum) and takes 2-5 days (random).\nhunt: adds 100 lbs of food and takes 2-5 days (random).\nstatus: lists food, health, distance traveled, and day.\nhelp: lists all the commands.\nquit: will end the game.")
-    input("Press any key to continue")
-    gui.clear()
+    print(ui.help_menu)
+    ui.user_pause()
+    ui.clear()
 
 
 # enforces what happens when a player decides to quit in the middle of a game
@@ -279,9 +298,11 @@ def handle_quit():
     day = 1
     game_is_over()
 
+
 def handle_invalid_input(response):
     """Displays a helpful response if the player inputs an invalid command."""
     print("'{0}' is not a valid command. Try again.".format(response))
+
 
 # returns True if the game is over, otherwise returns False
 def game_is_over():
@@ -290,48 +311,22 @@ def game_is_over():
         return True
     elif health_level <= 0:
         return True
-    elif miles_traveled >= 2000:
+    elif miles_traveled >= constants.MILES_BETWEEN_MISSOURI_AND_OREGON:
         return True
     elif month == 1 and day >= 1:
         return True
     else:
         return False
 
+
 # returns True if the player wins, otherwise returns False
 def player_wins():
     '''Determines if the player has won'''
-    if miles_traveled >= 2000:
+    if miles_traveled >= constants.MILES_BETWEEN_MISSOURI_AND_OREGON:
         return True
     else:
         return False
 
-
-# -----------------------------------------------------------------------------------------------------
-# Game Constants -- global variable constants that define the rules of the game, and which don't change.
-# -----------------------------------------------------------------------------------------------------
-MIN_MILES_PER_TRAVEL = 40
-MAX_MILES_PER_TRAVEL = 80
-MIN_DAYS_PER_TRAVEL = 3
-MAX_DAYS_PER_TRAVEL = 7
-
-MIN_DAYS_PER_REST = 2
-MAX_DAYS_PER_REST = 4
-HEALTH_CHANGE_PER_REST = 1
-MAX_HEALTH = 5
-
-MIN_DAYS_PER_HUNT = 1
-MAX_DAYS_PER_HUNT = 2
-
-FOOD_EATEN_PER_DAY = 5
-MILES_BETWEEN_MISSOURI_AND_OREGON = 2000
-MONTHS_WITH_31_DAYS = [1, 3, 5, 7, 8, 10, 12]
-MONTHS_WITH_30_DAYS = [4, 6, 9, 11]
-MONTHS_WITH_28_DAYS = [2]
-
-NAME_OF_MONTH = [
-    'fake', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
-    'August', 'September', 'October', 'November', 'December'
-]
 
 def main():
     # --------------------------------------------------------------------------------
@@ -345,26 +340,26 @@ def main():
     sicknesses_suffered_this_month = 0
     player_name = None
     playing = True
-    print(gui.welcome_text + gui.help_text + gui.good_luck_text)
-    input("Press any key to continue")
-    gui.clear()
+    print(ui.welcome_text + ui.help_text + ui.good_luck_text)
+    ui.user_pause()
+    ui.clear()
     player_name = input("\nWhat is your name, player? ").title()
-    gui.clear()
+    ui.clear()
     handle_status()
     while playing:
         handle_status()
-        print(gui.action_menu)
+        print(ui.action_menu)
         if health_level < 3:
-            print("You are dangerously low on health and could die the next time you travel. Choose option R to heal")
+            print(ui.low_health_warning)
         elif food_remaining < 100:
-            print("You are dangerously low on food and could die the next time you travel. Choose option H to hunt for food")
+            print(ui.low_food_warning)
         print()
         action = input("\nChoose an action, {0} --> ".format(player_name))
         if action == "travel" or action == "t":
-            gui.wagon()
+            ui.wagon()
             handle_travel()
         elif action == "rest" or action == "r":
-            gui.sleeping()
+            ui.sleeping()
             handle_rest()
         elif action == "hunt" or action == "h":
             handle_hunt()
@@ -374,17 +369,17 @@ def main():
             handle_help()
         elif action == "status" or action == "s":
             handle_status()
-            gui.clear()
+            ui.clear()
         else:
             handle_invalid_input(action)
-            input("Press any key to continue")
-            gui.clear()
+            ui.user_pause()
+            ui.clear()
         if game_is_over():
             playing = False
     if player_wins():
         print("\n\nCongratulations you made it to Oregon alive!\n")
         handle_status()
-        randomfamily = random.randint(1,eatnum)
+        randomfamily = random.randint(1, eatnum)
         if family_left == 4:
             print("Congratulations!, All of your family survived!")
         elif family_left == 3:
@@ -392,15 +387,18 @@ def main():
         elif family_left == 2:
             print("2 out of 4 of your family members survived. They will never be forgotten.")
         elif family_left == 1:
-            print("1 out of 4 of your family members survived. It's just you and",family[randomfamily],"now.")
+            print("1 out of 4 of your family members survived. It's just you and", ui.family[randomfamily], "now.")
         elif family_left == 0:
             print("You start your new life alone...")
-        gui.you_win()
+        ui.you_win()
     else:
         print("\n\nAlas, you lose...\n")
         handle_status()
-        gui.game_over()
+        ui.game_over()
 
+
+def console_main():
+    main()
 
 if __name__ == '__main__':
-  main()
+    console_main()
