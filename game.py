@@ -328,7 +328,7 @@ def player_wins():
         return False
 
 
-def main():
+def main(console):
     # --------------------------------------------------------------------------------
     # Game State -- global variables that collectively represent the state of the game
     # --------------------------------------------------------------------------------
@@ -397,8 +397,4 @@ def main():
         ui.game_over()
 
 
-def console_main():
-    main()
 
-if __name__ == '__main__':
-    console_main()

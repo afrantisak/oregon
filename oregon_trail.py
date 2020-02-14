@@ -5,8 +5,18 @@ import sys
 import game
 
 
+class Console(object):
+
+    def send(self, string):
+        print(string)
+
+    def recv(self):
+        return input()
+
+
 def console_main():
-    game.main()
+    console = Console()
+    game.main(console)
     return 0
 
 
