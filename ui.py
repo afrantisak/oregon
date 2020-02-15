@@ -82,85 +82,111 @@ class UserInterface(object):
         self.console = console
 
     def pause(self):
-        self.console.recv("Press any key to continue")
+        self.console.send("Press <Enter> to continue")
+        self.console.recv()
 
     def clear(self):
         self.console.clear()
 
-    def wagon(self):
-        self.clear()
-        i = 64
-        while i >= 0:
-            self.console.send("\n\n\n\n")
-            self.console.send(" "*i + "         /_________\ ")
-            self.console.send(" "*i + "<}        |       |")
-            self.console.send(" "*i + " /^^^\----|       |")
-            self.console.send(" "*i + "[]   []  0}======={0")
-            self.console.send("______________________________________________________________________")
-            i-=8
-            time.sleep(0.2)
-            self.clear()
+    def get_sick(self, sickness_amount, new_health_level):
+        self.console.send("You lost {sickness_amount} health to sickness! Your health is now at {new_health_level}".format(**locals()))
 
-    def sleeping(self):
-        self.clear()
-        i = 0
-        while i < 2:
-          self.console.send("\n\n\n\n")
-          self.console.send("                                  /_________\ ")
-          self.console.send("                         <}        |       |")
-          self.console.send("                          /^^^\----|       |")
-          self.console.send("                         []   []  0}======={0")
-          self.console.send("______________________________________________________________________")
-          time.sleep(0.5)
-          self.clear()
-          self.console.send("\n\n\n")
-          self.console.send("                                       z")
-          self.console.send("                                  /_________\ ")
-          self.console.send("                         <}        |       |")
-          self.console.send("                          /^^^\----|       |")
-          self.console.send("                         []   []  0}======={0")
-          self.console.send("______________________________________________________________________")
-          time.sleep(0.5)
-          self.clear()
-          self.console.send("\n\n")
-          self.console.send("                                            z  ")
-          self.console.send("                                       z")
-          self.console.send("                                  /_________\ ")
-          self.console.send("                         <}        |       |")
-          self.console.send("                          /^^^\----|       |")
-          self.console.send("                         []   []  0}======={0")
-          self.console.send("______________________________________________________________________")
-          time.sleep(0.5)
-          self.clear()
-          self.console.send("\n")
-          self.console.send("                                                 z     ")
-          self.console.send("                                            z       ")
-          self.console.send("                                       z           ")
-          self.console.send("                                  /_________\ ")
-          self.console.send("                         <}        |       |")
-          self.console.send("                          /^^^\----|       |")
-          self.console.send("                         []   []  0}======={0")
-          self.console.send("______________________________________________________________________")
-          time.sleep(0.5)
-          self.clear()
-          i+=1
+    def travel(self):
+        self.console.send("Wagon animation")
 
-    def you_win(self):
-        self.console.send("""\n
-            __   __              _    _  _         _
-            \ \ / /             | |  | |(_)       | |
-             \ V / ___   _   _  | |  | | _  _ __  | |
-              \ / / _ \ | | | | | |/\| || || '_ \ | |
-              | || (_) || |_| | \  /\  /| || | | ||_|
-              \_/ \___/  \__,_|  \/  \/ |_||_| |_|(_)
-            """)
+    def rest(self):
+        self.console.send("Sleeping animation")
+
+    def win(self):
+        self.console.send("You Win!")
 
     def game_over(self):
-        self.console.send("""\n
-             _____                        _____
-            |  __ \                      |  _  |
-            | |  \/ __ _ _ __ ___   ___  | | | |_   _____ _ __
-            | | __ / _` | '_ ` _ \ / _ \ | | | \ \ / / _ \ '__|
-            | |_\ \ (_| | | | | | |  __/ \ \_/ /\ V /  __/ |
-             \____/\__,_|_| |_| |_|\___|  \___/  \_/ \___|_|
-            """)
+        self.console.send("Game Over")
+
+    def print_food_remaining(self, days_of_food):
+        self.console.send("You have " + str(days_of_food) + " days of food left.")
+
+    def print_month(self, month_number):
+        self.console.send("It is now" + NAME_OF_MONTH[month_number] + ".")
+
+    def print_travel(self, miles, miles_remaining):
+        self.console.send("You have travelled {miles} miles and have {miles_remaining} miles remaining.".format(**locals()))
+
+    def input_hunting_choice(self):
+        self.console.send(hunt_menu)
+        return self.console.recv().lower()
+
+    def print_killed_animal(self, animal, food_delta):
+        self.console.send("You killed a {animal}. Food + {food_delta}".format(**locals()))
+
+    def print_fratricide(self, name, food_delta, comments):
+        self.console.send("You killed and ate {name}\n{comments}\nFood + {food_delta}".format(**locals()))
+
+    def print_hunt_failed(self, percent):
+        self.console.send("Hunt Failed {percent}% Chance".format(**locals()))
+
+    def print_all_family_dead(self):
+        self.console.send("All of your family is dead...")
+
+    def print_all_dogs_dead(self):
+        self.console.send("All of your dogs are dead...")
+
+    def print_status(self, month, day, food_remaining, health_level, miles_traveled, dogs_left, family_left):
+        self.console.send("Date: {0}".format(date_as_string(month, day)))
+        self.console.send("Food: {0}".format(food_remaining))
+        self.console.send("Health: {0}".format(health_level))
+        self.console.send("Miles Traveled: {0}".format(miles_traveled))
+        self.console.send("Dogs Left: {0}".format(dogs_left))
+        self.console.send("Family Left: {0}".format(family_left))
+
+    def print_help(self):
+        self.console.send(help_menu)
+
+    def print_invalid_command(self, command):
+        self.console.send("'{command}' is not a valid command. Try again.".format(**locals()))
+
+    def print_startup_text(self):
+        self.console.send(welcome_text + help_text + good_luck_text)
+
+    def input_player_name(self):
+        self.console.send("\nWhat is your name, player?")
+        return self.console.recv().title()
+
+    def print_action_menu(self):
+        self.console.send(action_menu)
+
+    def print_low_health(self):
+        self.console.send(low_health_warning)
+
+    def print_low_food(self):
+        self.console.send(ui.low_food_warning)
+
+    def input_action_choice(self, player_name):
+        self.console.send('\n\nChoose an action, {player_name}'.format(**locals()))
+        return self.console.recv().lower()
+
+    def print_family_left(self, family_left, randomfamily):
+        if family_left == 4:
+            self.console.send("Congratulations!, All of your family survived!")
+        elif family_left == 3:
+            self.console.send("Congratulations!, 3 out of 4 of your family members survived!")
+        elif family_left == 2:
+            self.console.send("2 out of 4 of your family members survived. They will never be forgotten.")
+        elif family_left == 1:
+            self.console.send("1 out of 4 of your family members survived. It's just you and", ui.family[randomfamily], "now.")
+        elif family_left == 0:
+            self.console.send("You start your new life alone...")
+
+    def print_congratulations(self):
+        self.console.send("\n\nCongratulations you made it to Oregon alive!\n")
+
+    def print_lose(self):
+        self.console.send("\n\nAlas, you lose...\n")
+
+
+# Converts a numeric date into a string.
+# inputs: a month in the range 1-12 and a day in the range 1-31
+# output: a string like "December 24".
+# Note: this function does not enforce calendar rules. It's happy to output impossible strings like "June 95" or "February 31"
+def date_as_string(month_number, day_number):
+    return str(month_number) + "/" + str(day_number)

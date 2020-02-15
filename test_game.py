@@ -12,11 +12,8 @@ class MockConsole(object):
         self.stdout.put(string)
         print(string)
 
-    def recv(self, prompt):
-        self.send(prompt)
-        user_input = self.stdin.get()
-        print("USER_INPUT:", user_input)
-        return user_input
+    def recv(self):
+        return self.stdin.get()
 
     def clear(self):
         self.stdout.put(None)

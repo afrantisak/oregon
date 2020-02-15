@@ -11,8 +11,8 @@ class Console(object):
     def send(self, string):
         print(string)
 
-    def recv(self, prompt):
-        return input(prompt)
+    def recv(self):
+        return input()
 
     def clear(self):
         os.system('clear')
