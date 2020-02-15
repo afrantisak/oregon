@@ -2,8 +2,8 @@
 
 import random
 import time
-import ui
 import constants
+import ui
 
 
 # Returns the number of days in the month (28, 30, or 31).
@@ -42,7 +42,7 @@ class Game(object):
 
     def handle_sickness(self):
         self.health_level -= 1
-        self.user.get_sick(1, self.health_level)
+        self.user.print_sick(1, self.health_level)
 
     def consume_food(self):
         '''allows player to eat 5 punds of food per day'''
@@ -282,19 +282,19 @@ class Game(object):
             elif self.food_remaining < 100:
                 self.user.print_low_food()
             action = self.user.input_action_choice(player_name)
-            if action == "travel" or action == "t":
-                self.user.travel()
+            if action == "travel":
+                self.user.print_wagon()
                 self.handle_travel()
-            elif action == "rest" or action == "r":
+            elif action == "rest":
                 self.user.sleeping()
                 self.handle_rest()
-            elif action == "hunt" or action == "h":
+            elif action == "hunt":
                 self.handle_hunt()
-            elif action == "quit" or action == "q":
+            elif action == "quit":
                 self.handle_quit()
-            elif action == "help" or action == "?":
+            elif action == "help":
                 self.handle_help()
-            elif action == "status" or action == "s":
+            elif action == "status":
                 self.handle_status()
                 self.user.clear_screen()
             else:

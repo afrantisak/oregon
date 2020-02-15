@@ -85,10 +85,10 @@ class UserInterface(object):
     def clear_screen(self):
         self.console.clear()
 
-    def get_sick(self, sickness_amount, new_health_level):
+    def print_sick(self, sickness_amount, new_health_level):
         self.console.send("You lost {sickness_amount} health to sickness! Your health is now at {new_health_level}".format(**locals()))
 
-    def travel(self):
+    def print_wagon(self):
         self.console.send("Wagon animation")
 
     def rest(self):
@@ -160,7 +160,18 @@ class UserInterface(object):
 
     def input_action_choice(self, player_name):
         self.console.send('Choose an action, {player_name}'.format(**locals()))
-        return self.console.recv().lower()
+        action = self.console.recv().lower()
+        aliases = {
+            "t": "travel",
+            "r": "rest",
+            "h": "hunt",
+            "q": "quit",
+            "?": "help",
+            "s": "status",
+        }
+        if action in aliases:
+            action = aliases[action]
+        return action
 
     def print_family_left(self, family_left, randomfamily):
         if family_left == 4:
