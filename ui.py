@@ -38,87 +38,6 @@ hunt_menu = """What would you like to hunt?
     \n"""
 
 
-low_health_warning = "You are dangerously low on health and could die the next time you travel. Choose option R to heal"
-low_food_warning = "You are dangerously low on food and could die the next time you travel. Choose option H to hunt for food"
-dogs = ["Ranger" , "Scout" , "Fido" , "Spot" , "Snoopy" , "Charlie" , "Bella" , "Max" , "Woody" , "Daisy"]
-family = ["Emma" , "Olivia" , "Ava" , "Isabella" , "Sophia" , "Liam" , "Noah" , "William" , "James" , "Oliver"]
-NAME_OF_MONTH = [
-    'fake', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
-    'August', 'September', 'October', 'November', 'December'
-]
-
-
-def user_pause():
-  input("Press any key to continue")
-
-
-def clear():
-  """clears the screen; for the animations and a cleaner look"""
-  os.system('clear')
-
-
-def wagon():
-  """the code to print the wagon"""
-  clear()
-  i = 64
-  while i >= 0:
-    print("\n\n\n\n")
-    print(" "*i , "         /_________\ ")
-    print(" "*i , "<}        |       |")
-    print(" "*i , " /^^^\----|       |")
-    print(" "*i , "[]   []  0}======={0")
-    print("______________________________________________________________________")
-    i-=8
-    time.sleep(0.2)
-    clear()
-
-
-def sleeping():
-  """sleeping animation"""
-  clear()
-  i = 0
-  while i < 2:
-    print("\n\n\n\n")
-    print("                                  /_________\ ")
-    print("                         <}        |       |")
-    print("                          /^^^\----|       |")
-    print("                         []   []  0}======={0")
-    print("______________________________________________________________________")
-    time.sleep(0.5)
-    clear()
-    print("\n\n\n")
-    print("                                       z")
-    print("                                  /_________\ ")
-    print("                         <}        |       |")
-    print("                          /^^^\----|       |")
-    print("                         []   []  0}======={0")
-    print("______________________________________________________________________")
-    time.sleep(0.5)
-    clear()
-    print("\n\n")
-    print("                                            z  ")
-    print("                                       z")
-    print("                                  /_________\ ")
-    print("                         <}        |       |")
-    print("                          /^^^\----|       |")
-    print("                         []   []  0}======={0")
-    print("______________________________________________________________________")
-    time.sleep(0.5)
-    clear()
-    print("\n")
-    print("                                                 z     ")
-    print("                                            z       ")
-    print("                                       z           ")
-    print("                                  /_________\ ")
-    print("                         <}        |       |")
-    print("                          /^^^\----|       |")
-    print("                         []   []  0}======={0")
-    print("______________________________________________________________________")
-    time.sleep(0.5)
-    clear()
-    i+=1
-
-
 # welcome text
 welcome_text = """
 Welcome to the Oregon Trail! The year is 1850 and Americans are
@@ -147,25 +66,101 @@ You can also enter one of these commands without using up your turn:
 
 
 good_luck_text = "\nGood luck, and see you in Oregon!"
+low_health_warning = "You are dangerously low on health and could die the next time you travel. Choose option R to heal"
+low_food_warning = "You are dangerously low on food and could die the next time you travel. Choose option H to hunt for food"
+dogs = ["Ranger" , "Scout" , "Fido" , "Spot" , "Snoopy" , "Charlie" , "Bella" , "Max" , "Woody" , "Daisy"]
+family = ["Emma" , "Olivia" , "Ava" , "Isabella" , "Sophia" , "Liam" , "Noah" , "William" , "James" , "Oliver"]
+NAME_OF_MONTH = [
+    'fake', 'January', 'February', 'March', 'April', 'May', 'June', 'July',
+    'August', 'September', 'October', 'November', 'December'
+]
 
 
-def you_win():
-  print("""\n
-        __   __              _    _  _         _
-        \ \ / /             | |  | |(_)       | |
-         \ V / ___   _   _  | |  | | _  _ __  | |
-          \ / / _ \ | | | | | |/\| || || '_ \ | |
-          | || (_) || |_| | \  /\  /| || | | ||_|
-          \_/ \___/  \__,_|  \/  \/ |_||_| |_|(_)
-        """)
+class UserInterface(object):
 
+    def __init__(self, console):
+        self.console = console
 
-def game_over():
-  print("""\n
-         _____                        _____
-        |  __ \                      |  _  |
-        | |  \/ __ _ _ __ ___   ___  | | | |_   _____ _ __
-        | | __ / _` | '_ ` _ \ / _ \ | | | \ \ / / _ \ '__|
-        | |_\ \ (_| | | | | | |  __/ \ \_/ /\ V /  __/ |
-         \____/\__,_|_| |_| |_|\___|  \___/  \_/ \___|_|
-        """)
+    def pause(self):
+        self.console.recv("Press any key to continue")
+
+    def clear(self):
+        self.console.clear()
+
+    def wagon(self):
+        self.clear()
+        i = 64
+        while i >= 0:
+            self.console.send("\n\n\n\n")
+            self.console.send(" "*i + "         /_________\ ")
+            self.console.send(" "*i + "<}        |       |")
+            self.console.send(" "*i + " /^^^\----|       |")
+            self.console.send(" "*i + "[]   []  0}======={0")
+            self.console.send("______________________________________________________________________")
+            i-=8
+            time.sleep(0.2)
+            self.clear()
+
+    def sleeping(self):
+        self.clear()
+        i = 0
+        while i < 2:
+          self.console.send("\n\n\n\n")
+          self.console.send("                                  /_________\ ")
+          self.console.send("                         <}        |       |")
+          self.console.send("                          /^^^\----|       |")
+          self.console.send("                         []   []  0}======={0")
+          self.console.send("______________________________________________________________________")
+          time.sleep(0.5)
+          self.clear()
+          self.console.send("\n\n\n")
+          self.console.send("                                       z")
+          self.console.send("                                  /_________\ ")
+          self.console.send("                         <}        |       |")
+          self.console.send("                          /^^^\----|       |")
+          self.console.send("                         []   []  0}======={0")
+          self.console.send("______________________________________________________________________")
+          time.sleep(0.5)
+          self.clear()
+          self.console.send("\n\n")
+          self.console.send("                                            z  ")
+          self.console.send("                                       z")
+          self.console.send("                                  /_________\ ")
+          self.console.send("                         <}        |       |")
+          self.console.send("                          /^^^\----|       |")
+          self.console.send("                         []   []  0}======={0")
+          self.console.send("______________________________________________________________________")
+          time.sleep(0.5)
+          self.clear()
+          self.console.send("\n")
+          self.console.send("                                                 z     ")
+          self.console.send("                                            z       ")
+          self.console.send("                                       z           ")
+          self.console.send("                                  /_________\ ")
+          self.console.send("                         <}        |       |")
+          self.console.send("                          /^^^\----|       |")
+          self.console.send("                         []   []  0}======={0")
+          self.console.send("______________________________________________________________________")
+          time.sleep(0.5)
+          self.clear()
+          i+=1
+
+    def you_win(self):
+        self.console.send("""\n
+            __   __              _    _  _         _
+            \ \ / /             | |  | |(_)       | |
+             \ V / ___   _   _  | |  | | _  _ __  | |
+              \ / / _ \ | | | | | |/\| || || '_ \ | |
+              | || (_) || |_| | \  /\  /| || | | ||_|
+              \_/ \___/  \__,_|  \/  \/ |_||_| |_|(_)
+            """)
+
+    def game_over(self):
+        self.console.send("""\n
+             _____                        _____
+            |  __ \                      |  _  |
+            | |  \/ __ _ _ __ ___   ___  | | | |_   _____ _ __
+            | | __ / _` | '_ ` _ \ / _ \ | | | \ \ / / _ \ '__|
+            | |_\ \ (_| | | | | | |  __/ \ \_/ /\ V /  __/ |
+             \____/\__,_|_| |_| |_|\___|  \___/  \_/ \___|_|
+            """)

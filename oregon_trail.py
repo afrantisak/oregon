@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 
+import os
 import sys
 import game
 
@@ -10,13 +11,17 @@ class Console(object):
     def send(self, string):
         print(string)
 
-    def recv(self):
-        return input()
+    def recv(self, prompt):
+        return input(prompt)
+
+    def clear(self):
+        os.system('clear')
 
 
 def console_main():
     console = Console()
-    game.main(console)
+    runner = game.Game(console)
+    runner.main()
     return 0
 
 
