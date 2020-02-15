@@ -25,7 +25,6 @@ Hunt   (h)
 Status (s)
 Help   (?)
 Quit   (q)
-
 """
 
 
@@ -38,7 +37,6 @@ hunt_menu = """What would you like to hunt?
     \n"""
 
 
-# welcome text
 welcome_text = """
 Welcome to the Oregon Trail! The year is 1850 and Americans are
 headed out West to populate the frontier. Your goal is to travel
@@ -49,7 +47,6 @@ can hunt and rest, but you have to get there before winter!
 """
 
 
-# help text
 help_text = """
 You can take one of 3 actions:
 
@@ -85,7 +82,7 @@ class UserInterface(object):
         self.console.send("Press <Enter> to continue")
         self.console.recv()
 
-    def clear(self):
+    def clear_screen(self):
         self.console.clear()
 
     def get_sick(self, sickness_amount, new_health_level):
@@ -162,7 +159,7 @@ class UserInterface(object):
         self.console.send(ui.low_food_warning)
 
     def input_action_choice(self, player_name):
-        self.console.send('\n\nChoose an action, {player_name}'.format(**locals()))
+        self.console.send('Choose an action, {player_name}'.format(**locals()))
         return self.console.recv().lower()
 
     def print_family_left(self, family_left, randomfamily):

@@ -175,36 +175,36 @@ class Game(object):
             if hunt == 1:
                 self.food_remaining += 120
                 self.user.print_killed_animal("Bison", 120)
-                ui.user_pause()
-                ui.clear()
+                self.user.pause()
+                self.user.clear_screen()
             else:
                 self.user.print_hunt_failed(20)
-                ui.user_pause()
-                ui.clear()
+                self.user.pause()
+                self.user.clear_screen()
         elif food == "p":
             hunt = random.randint(1, 3)
             self.days_to_hunt()
             if hunt == 1:
                 self.food_remaining += 80
                 self.user.print_killed_animal("Pig", 80)
-                ui.user_pause()
-                ui.clear()
+                self.user.pause()
+                self.user.clear_screen()
             else:
                 self.user.print_hunt_failed(33)
-                ui.user_pause()
-                ui.clear()
+                self.user.pause()
+                self.user.clear_screen()
         elif food == "s":
             hunt = random.randint(1, 2)
             self.days_to_hunt()
             if hunt == 1:
                 self.food_remaining += 40
                 self.user.print_killed_animal("Snake", 40)
-                ui.user_pause()
-                ui.clear()
+                self.user.pause()
+                self.user.clear_screen()
             else:
                 self.user.print_hunt_failed(50)
-                ui.user_pause()
-                ui.clear()
+                self.user.pause()
+                self.user.clear_screen()
         elif food == "f":
             if self.family_left >= 1:
                 self.food_remaining += 80
@@ -212,8 +212,8 @@ class Game(object):
                 self.user.print_fratricide(family[num], 80, "All the memories...\nThe screams...")
                 ui.family.remove(ui.family[num])
                 self.eatnum -= 1
-                ui.user_pause()
-                ui.clear()
+                self.user.pause()
+                self.user.clear_screen()
             else:
                 self.user.print_all_family_dead()
         elif food == "d":
@@ -223,8 +223,8 @@ class Game(object):
                 self.user.print_fratricide(dogs[num], 60, "All the memories...\nThe howling...")
                 ui.dogs.remove(ui.dogs[num])
                 self.eatnum -= 1
-                ui.user_pause()
-                ui.clear()
+                self.user.pause()
+                self.user.clear_screen()
             else:
                 self.user.print_all_dogs_dead()
 
@@ -233,8 +233,8 @@ class Game(object):
 
     def handle_help(self):
         self.user.print_help()
-        ui.user_pause()
-        ui.clear()
+        self.user.pause()
+        self.user.clear_screen()
 
     def handle_quit(self):
         self.month = 1
@@ -272,12 +272,10 @@ class Game(object):
         playing = True
         self.user.print_startup_text()
         self.user.pause()
-        self.user.clear()
+        self.user.clear_screen()
         player_name = self.user.input_player_name()
-        self.user.clear()
-        self.handle_status()
+        self.user.clear_screen()
         while playing:
-            self.handle_status()
             self.user.print_action_menu()
             if self.health_level < 3:
                 self.user.print_low_health()
@@ -298,11 +296,11 @@ class Game(object):
                 self.handle_help()
             elif action == "status" or action == "s":
                 self.handle_status()
-                self.user.clear()
+                self.user.clear_screen()
             else:
                 self.handle_invalid_input(action)
                 self.user.pause()
-                self.user.clear()
+                self.user.clear_screen()
             if self.game_is_over():
                 playing = False
         if self.player_wins():
