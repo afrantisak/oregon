@@ -36,6 +36,14 @@ class Game(object):
         self.family_left = 4
         self.dogs_left = 3
         self.eatnum = 9
+        self.actions = [
+            {'name': 'travel',  'alias': 't', 'handler': self.handle_travel,   'help': 'moves you randomly between 30-60 miles and takes 3-7 days (random).'},
+            {'name': 'rest',    'alias': 'r', 'handler': self.handle_rest,     'help': 'increases health 1 level (up to 5 maximum) and takes 2-5 days (random).'},
+            {'name': 'hunt',    'alias': 'h', 'handler': self.handle_hunt,     'help': 'adds 20-100 lbs of food and takes 2-5 days (random).'},
+            {'name': 'status',  'alias': 's', 'handler': self.handle_status,   'help': 'lists food, health, distance traveled, and day.'},
+            {'name': 'help',    'alias': '?', 'handler': self.handle_help,     'help': 'lists all the commands.'},
+            {'name': 'quit',    'alias': 'q', 'handler': self.handle_quit,     'help': 'will end the game.'},
+        ]
 
     def miles_remaining(self):
         return constants.MILES_BETWEEN_MISSOURI_AND_OREGON - self.miles_traveled
@@ -48,7 +56,7 @@ class Game(object):
         '''allows player to eat 5 punds of food per day'''
         self.food_remaining -= constants.FOOD_EATEN_PER_DAY
         if self.food_remaining < 0:
-            self.game_is_over()
+            self.is_game_over()  # TODO
         else:
             days_food = self.food_remaining / 5
             self.user.print_food_remaining(days_food)
@@ -99,26 +107,26 @@ class Game(object):
     # so far, 1 sick day so far, or no sick days so far. This system guarantees that
     # there will be exactly 2 sick days each month, and incidentally that every day
     # of the month is equally likely to be a sick day
-    def random_sickness_occurs(self,  percent):
-        '''gives player a randomly occuring sickness two times each month'''
-        # Checks if sickness has happened twice already this month and returns false
-        if self.sicknesses_suffered_this_month < 2:
-            days_left = days_in_month(self.month) - self.day
+    '''gives player a randomly occuring sickness two times each month'''
+    # Checks if sickness has happened twice already this month and returns false
+    def random_sickness_occurs(self, random_percent):
+        chance = 0
+        days_left = days_in_month(self.month) - self.day
         if self.sicknesses_suffered_this_month == 0:
-            chance = 2 / days_left
+            if days_left == 0:
+                chance = 100
+            else:
+                chance = 200 / days_left
         elif self.sicknesses_suffered_this_month == 1:
-            chance = 1 / days_left
-        chance = float(chance)
-        chance = format(chance, '.2f')
-        chance = float(chance)
-        chance *= 100
-        chance = round(chance)
-        if chance >= percent:
-            return True
-        else:
-            return False
+            if days_left == 0:
+                chance = 100
+            else:
+                chance = 100 / days_left
         if days_left == 0:
-            self.sickness_suffered_this_month = 0
+            self.sicknesses_suffered_this_month = 0
+        if chance >= random_percent:
+            self.sicknesses_suffered_this_month += 1
+            return True
         else:
             return False
 
@@ -127,8 +135,8 @@ class Game(object):
     # rules are quirky: player is guaranteed to fall ill a certain number of
     # times each month, so illness needs to keep track of month changes.
     # input: an integer number of days that elapse.
+    '''Goes to the next day'''
     def advance_game_clock(self, number_days):
-        '''Goes to the next day'''
         stop = number_days + 1
         day_list = range(1, stop)
         for i in day_list:
@@ -143,8 +151,9 @@ class Game(object):
                 self.user.print_month(self.month)
 
     # enforces the game rules for what happens if a player decides to travel
+    '''travels the player 30 - 60 miles in 3 - 7 days'''
     def handle_travel(self):
-        '''travels the player 30 - 60 miles in 3 - 7 days'''
+        self.user.print_wagon()
         miles = random.randint(constants.MIN_MILES_PER_TRAVEL, constants.MAX_MILES_PER_TRAVEL)
         time = random.randint(constants.MIN_DAYS_PER_TRAVEL, constants.MAX_DAYS_PER_TRAVEL)
         self.miles_traveled += miles
@@ -153,14 +162,14 @@ class Game(object):
 
     # enforces the game rules for what happens if a player decides to rest
     def handle_rest(self):
-        ''''carries out the 'rest' command'''
+        self.user.print_rest()
         if self.health_level < 5:
           self.health_level = self.health_level + 1
         days_resting = random.randint(constants.MIN_DAYS_PER_REST, constants.MAX_DAYS_PER_REST)
         self.advance_game_clock(days_resting)
 
+    """shortens the code in handle_hunt"""
     def days_to_hunt(self):
-        """shortens the code in handle_hunt"""
         upper_bound = constants.MAX_DAYS_PER_HUNT
         day_at_hunt = random.randint(constants.MIN_DAYS_PER_HUNT, upper_bound)
         self.advance_game_clock(day_at_hunt)
@@ -176,11 +185,9 @@ class Game(object):
                 self.food_remaining += 120
                 self.user.print_killed_animal("Bison", 120)
                 self.user.pause()
-                self.user.clear_screen()
             else:
                 self.user.print_hunt_failed(20)
                 self.user.pause()
-                self.user.clear_screen()
         elif food == "p":
             hunt = random.randint(1, 3)
             self.days_to_hunt()
@@ -188,11 +195,9 @@ class Game(object):
                 self.food_remaining += 80
                 self.user.print_killed_animal("Pig", 80)
                 self.user.pause()
-                self.user.clear_screen()
             else:
                 self.user.print_hunt_failed(33)
                 self.user.pause()
-                self.user.clear_screen()
         elif food == "s":
             hunt = random.randint(1, 2)
             self.days_to_hunt()
@@ -200,11 +205,9 @@ class Game(object):
                 self.food_remaining += 40
                 self.user.print_killed_animal("Snake", 40)
                 self.user.pause()
-                self.user.clear_screen()
             else:
                 self.user.print_hunt_failed(50)
                 self.user.pause()
-                self.user.clear_screen()
         elif food == "f":
             if self.family_left >= 1:
                 self.food_remaining += 80
@@ -213,7 +216,6 @@ class Game(object):
                 ui.family.remove(ui.family[num])
                 self.eatnum -= 1
                 self.user.pause()
-                self.user.clear_screen()
             else:
                 self.user.print_all_family_dead()
         elif food == "d":
@@ -224,27 +226,28 @@ class Game(object):
                 ui.dogs.remove(ui.dogs[num])
                 self.eatnum -= 1
                 self.user.pause()
-                self.user.clear_screen()
             else:
                 self.user.print_all_dogs_dead()
 
-    def handle_status(self):
+    def print_status(self):
         self.user.print_status(self.month, self.day, self.food_remaining, self.health_level, self.miles_traveled, self.dogs_left, self.family_left)
+
+    def handle_status(self):
+        self.print_status()
 
     def handle_help(self):
         self.user.print_help()
         self.user.pause()
-        self.user.clear_screen()
 
     def handle_quit(self):
         self.month = 1
         self.day = 1
-        self.game_is_over()
+        self.is_game_over()
 
     def handle_invalid_input(self, response):
         self.user.print_invalid_command(response)
 
-    def game_is_over(self):
+    def is_game_over(self):
         if self.food_remaining < 0:
             return True
         elif self.health_level <= 0:
@@ -256,60 +259,42 @@ class Game(object):
         else:
             return False
 
-    def player_wins(self):
+    def is_game_won(self):
         if self.miles_traveled >= constants.MILES_BETWEEN_MISSOURI_AND_OREGON:
             return True
         else:
             return False
 
+    def handle_action(self):
+        choices = [{'name': action['name'], 'alias': action['alias']} for action in self.actions]
+        aliases = {action['alias']: action['name'] for action in self.actions}
+        handlers = {action['name']: action['handler'] for action in self.actions}
+        self.user.clear_screen()
+        self.print_status()
+        self.user.print_action_menu(choices)
+        if self.health_level < 3:
+            self.user.print_low_health()
+        elif self.food_remaining < 100:
+            self.user.print_low_food()
+        action = self.user.input_action_choice(self.player_name)
+        if action in aliases:
+            action = aliases[action]
+        if action in handlers:
+            handlers[action]()
+        else:
+            self.handle_invalid_input(action)
+        return not self.is_game_over()
+
     def main(self):
-        self.miles_traveled = 0
-        self.food_remaining = 500
-        self.health_level = 5
-        self.month = 3
-        self.day = 1
-        self.sicknesses_suffered_this_month = 0
-        playing = True
         self.user.print_startup_text()
-        self.user.pause()
-        self.user.clear_screen()
-        player_name = self.user.input_player_name()
-        self.user.clear_screen()
-        while playing:
-            self.user.print_action_menu()
-            if self.health_level < 3:
-                self.user.print_low_health()
-            elif self.food_remaining < 100:
-                self.user.print_low_food()
-            action = self.user.input_action_choice(player_name)
-            if action == "travel":
-                self.user.print_wagon()
-                self.handle_travel()
-            elif action == "rest":
-                self.user.sleeping()
-                self.handle_rest()
-            elif action == "hunt":
-                self.handle_hunt()
-            elif action == "quit":
-                self.handle_quit()
-            elif action == "help":
-                self.handle_help()
-            elif action == "status":
-                self.handle_status()
-                self.user.clear_screen()
-            else:
-                self.handle_invalid_input(action)
-                self.user.pause()
-                self.user.clear_screen()
-            if self.game_is_over():
-                playing = False
-        if self.player_wins():
+        self.player_name = self.user.input_player_name()
+        while self.handle_action():
+            self.user.pause()
+        if self.is_game_won():
             self.user.print_congratulations()
-            self.handle_status()
             randomfamily = random.randint(1, self.eatnum)
             self.user.print_family_left(self.family_left, randomfamily)
             self.user.win()
         else:
             self.user.print_lose()
-            self.handle_status()
             self.user.game_over()

@@ -8,10 +8,10 @@ import game
 
 class Console(object):
 
-    def send(self, string):
+    def print(self, string):
         print(string)
 
-    def recv(self):
+    def input(self):
         return input()
 
     def clear(self):
@@ -21,7 +21,7 @@ class Console(object):
 def console_main():
     console = Console()
     runner = game.Game(console)
-    runner.main()
+    main = runner.main()
     return 0
 
 

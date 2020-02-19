@@ -1,6 +1,6 @@
 import game
 import queue
-
+import threading
 
 class MockConsole(object):
 
@@ -8,30 +8,39 @@ class MockConsole(object):
         self.stdout = queue.Queue()
         self.stdin = queue.Queue()
 
-    def send(self, string):
+    def print(self, string):
         self.stdout.put(string)
-        print(string)
+        list(map(lambda line: print("<<<", line), string.splitlines()))
 
-    def recv(self):
-        return self.stdin.get()
+    def input(self):
+        string = self.stdin.get()
+        list(map(lambda line: print(">>>", line), string.splitlines()))
+        return string
 
     def clear(self):
         self.stdout.put(None)
 
-    def recv_output(self):
+    def get_output(self):
         return self.stdout.get()
 
-    def send_input(self, string):
+    def put_input(self, string=""):
         self.stdin.put(string)
 
 
 def test_happy_path():
     console = MockConsole()
     runner = game.Game(console)
-    console.send_input("")
-    console.send_input("Robert")
-    console.send_input("t")
-    console.send_input("q")
-    runner.main()
+    game_thread = threading.Thread(target=runner.main, daemon=True)
+    game_thread.start()
+    console.put_input("Robert")
+    for i in range(1, 3):
+        console.put_input("travel")
+        console.put_input()
+        console.put_input("travel")
+        console.put_input()
+        console.put_input("rest")
+        console.put_input()
+    console.put_input("quit")
+    game_thread.join()
 
 
