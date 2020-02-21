@@ -2,56 +2,12 @@
 
 import os
 import time
+import json
 
-
-help_menu = """
-travel: moves you randomly between 30-60 miles and takes 3-7 days (random).
-rest: increases health 1 level (up to 5 maximum) and takes 2-5 days (random).
-hunt: adds 100 lbs of food and takes 2-5 days (random).
-status: lists food, health, distance traveled, and day.
-help: lists all the commands.
-quit: will end the game.
-"""
-
-
-action_menu = """
-"""
-
-
-hunt_menu = """What would you like to hunt?
-    Bison  (b)
-    Pig    (p)
-    Snake  (s)
-    Family (f)
-    Dog    (d)
-    \n"""
-
-
-welcome_text = """
-Welcome to the Oregon Trail! The year is 1850 and Americans are
-headed out West to populate the frontier. Your goal is to travel
-by wagon train from Independence, MO to Oregon (2000 miles). You start
-on March 1st, and your goal is to reach Oregon by December 31st.
-The trail is arduous. Each day costs you food and health. You
-can hunt and rest, but you have to get there before winter!
-"""
-
-
-help_text = """
-You can take one of 3 actions:
-
-  travel (t) - 
-  rest   (r) - 
-  hunt   (h) - 
-
-You can also enter one of these commands without using up your turn:
-
-  status (s) - 
-  help   (?) - 
-  quit   (q) - 
-"""
-
-
+help_menu = ""
+hunt_menu = "What would you like to hunt? Bison/b Pig/p Snake/s Family/f Dog/d"
+welcome_text = "Welcome to the Oregon Trail!"
+help_text = ""
 good_luck_text = "\nGood luck, and see you in Oregon!"
 low_health_warning = "You are dangerously low on health and could die the next time you travel. Choose option R to heal"
 low_food_warning = "You are dangerously low on food and could die the next time you travel. Choose option H to hunt for food"
@@ -119,12 +75,15 @@ class UserInterface(object):
         self.console.print("All of your dogs are dead...")
 
     def print_status(self, month, day, food_remaining, health_level, miles_traveled, dogs_left, family_left):
-        self.console.print("Date: {0}".format(date_as_string(month, day)))
-        self.console.print("Food: {0}".format(food_remaining))
-        self.console.print("Health: {0}".format(health_level))
-        self.console.print("Miles Traveled: {0}".format(miles_traveled))
-        self.console.print("Dogs Left: {0}".format(dogs_left))
-        self.console.print("Family Left: {0}".format(family_left))
+        output = {
+            'Date': date_as_string(month, day),
+            "Food": food_remaining,
+            "Health": health_level,
+            "Miles Traveled": miles_traveled,
+            "Dogs Left": dogs_left,
+            "Family Left": family_left,
+        }
+        self.console.print(json.dumps(output))
 
     def print_help(self):
         self.console.print(help_menu)
@@ -140,14 +99,11 @@ class UserInterface(object):
         return self.console.input().title()
 
     def print_action_menu(self, choices):
-        self.console.print("---------------")
         self.console.print("Pick an action:")
-        self.console.print("---------------")
         string = ''
         for choice in choices:
-            string += "{choice[name]:6} ({choice[alias]:1}) | ".format(**locals())
+            string += "{choice[name]}/{choice[alias]} | ".format(**locals())
         self.console.print(string)
-        self.console.print("---------------")
 
     def print_low_health(self):
         self.console.print(low_health_warning)
@@ -175,7 +131,7 @@ class UserInterface(object):
         self.console.print("\n\nCongratulations you made it to Oregon alive!\n")
 
     def print_lose(self):
-        self.console.print("\n\nAlas, you lose...\n")
+        self.console.print("Alas, you lose...")
 
 
 # Converts a numeric date into a string.

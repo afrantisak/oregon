@@ -141,7 +141,7 @@ class Game(object):
         day_list = range(1, stop)
         for i in day_list:
             self.day += 1
-            percent = random.randint(1 , 100)
+            percent = self.console.random_integer(1 , 100)
             sickness = self.random_sickness_occurs(percent)
             if sickness == True:
                 self.handle_sickness()
@@ -154,8 +154,8 @@ class Game(object):
     '''travels the player 30 - 60 miles in 3 - 7 days'''
     def handle_travel(self):
         self.user.print_wagon()
-        miles = random.randint(constants.MIN_MILES_PER_TRAVEL, constants.MAX_MILES_PER_TRAVEL)
-        time = random.randint(constants.MIN_DAYS_PER_TRAVEL, constants.MAX_DAYS_PER_TRAVEL)
+        miles = self.console.random_integer(constants.MIN_MILES_PER_TRAVEL, constants.MAX_MILES_PER_TRAVEL)
+        time = self.console.random_integer(constants.MIN_DAYS_PER_TRAVEL, constants.MAX_DAYS_PER_TRAVEL)
         self.miles_traveled += miles
         self.user.print_travel(miles, self.miles_remaining())
         self.advance_game_clock(time)
@@ -165,21 +165,21 @@ class Game(object):
         self.user.print_rest()
         if self.health_level < 5:
           self.health_level = self.health_level + 1
-        days_resting = random.randint(constants.MIN_DAYS_PER_REST, constants.MAX_DAYS_PER_REST)
+        days_resting = self.console.random_integer(constants.MIN_DAYS_PER_REST, constants.MAX_DAYS_PER_REST)
         self.advance_game_clock(days_resting)
 
     """shortens the code in handle_hunt"""
     def days_to_hunt(self):
         upper_bound = constants.MAX_DAYS_PER_HUNT
-        day_at_hunt = random.randint(constants.MIN_DAYS_PER_HUNT, upper_bound)
+        day_at_hunt = self.console.random_integer(constants.MIN_DAYS_PER_HUNT, upper_bound)
         self.advance_game_clock(day_at_hunt)
 
     # the game rules for what happens if a player decides to hunt
     def handle_hunt(self):
-        num = random.randint(0,self.eatnum)
+        num = self.console.random_integer(0,self.eatnum)
         food = self.user.input_hunting_choice()
         if food == "b":
-            hunt = random.randint(1, 5)
+            hunt = self.console.random_integer(1, 5)
             self.days_to_hunt()
             if hunt == 1:
                 self.food_remaining += 120
@@ -189,7 +189,7 @@ class Game(object):
                 self.user.print_hunt_failed(20)
                 self.user.pause()
         elif food == "p":
-            hunt = random.randint(1, 3)
+            hunt = self.console.random_integer(1, 3)
             self.days_to_hunt()
             if hunt == 1:
                 self.food_remaining += 80
@@ -199,7 +199,7 @@ class Game(object):
                 self.user.print_hunt_failed(33)
                 self.user.pause()
         elif food == "s":
-            hunt = random.randint(1, 2)
+            hunt = self.console.random_integer(1, 2)
             self.days_to_hunt()
             if hunt == 1:
                 self.food_remaining += 40
@@ -292,9 +292,22 @@ class Game(object):
             self.user.pause()
         if self.is_game_won():
             self.user.print_congratulations()
-            randomfamily = random.randint(1, self.eatnum)
+            randomfamily = self.console.random_integer(1, self.eatnum)
             self.user.print_family_left(self.family_left, randomfamily)
             self.user.win()
         else:
+            self.print_status()
             self.user.print_lose()
             self.user.game_over()
+
+def re_scale(old_val, old_min, old_max, new_min, new_max):
+    ''' [old_min..old_val..old_max]
+        [new_min..new_val..new_max]
+        old_ratio = (old_val-old_min)/(old_max-old_min)
+        new_ratio = (new_val-new_min)/(new_max-old_min)
+        new_ratio = old_ratio
+        (new_val-new_min)/(new_max-new_min) = (old_val-old_min)/(old_max-old_min)
+        solve for new_val
+        new_val = (old_val-old_min)(new_max-new_min)/(old_max-old_min) + new_min
+        '''
+    return ((old_val - old_min) * (new_max - new_min) / (old_max - old_min)) + new_min
